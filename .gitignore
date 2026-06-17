@@ -1,0 +1,20 @@
+# 小红书 Cookie 文件
+data/cookies/*.json
+
+# 环境变量
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
