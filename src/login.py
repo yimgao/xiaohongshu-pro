@@ -24,14 +24,31 @@ def qrcode_login(browser: XHSBrowser, timeout: int = 120) -> bool:
         True 登录成功, False 超时
     """
     page = browser.page
-    page.goto("https://www.xiaohongshu.com/login", wait_until="domcontentloaded")
+    page.goto("https://creator.xiaohongshu.com/login?source=official", wait_until="domcontentloaded")
     browser.human_delay(2, 2)
 
-    # 切换到二维码 tab
-    qr_tab = page.query_selector('[data-testid="qrcode-login"]')
-    if qr_tab:
-        qr_tab.click()
+    # 点击二维码登录按钮（左侧图片图标）
+    qr_btn = page.query_selector("img[src*='login'], .login-qrcode, .qrcode-tab")
+    if not qr_btn:
+        # 尝试找所有可点击的图片元素
+        images = page.query_selector_all("img")
+        for img in images:
+            src = img.get_attribute("src") or ""
+            if "qr" in src.lower() or "wechat" in src.lower():
+                qr_btn = img
+                break
+    if qr_btn:
+        qr_btn.click()
         browser.human_delay(1, 1)
+    else:
+        # 备用：点击第一个非短信登录的可交互元素
+        tabs = page.query_selector_all("[role='tab'], .tab, [class*='tab']")
+        for tab in tabs:
+            text = tab.inner_text()
+            if "短信" not in text and text.strip():
+                tab.click()
+                browser.human_delay(1, 1)
+                break
 
     console.print(Panel.fit(
         "[bold yellow]📱 请用微信或小红书 App 扫码登录[/bold yellow]\n\n"
