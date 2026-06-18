@@ -56,6 +56,12 @@ class XHSBrowser:
         self._browser = self._pw.chromium.launch(
             headless=settings.headless,
             slow_mo=settings.slow_mo,
+            channel="chromium",
+            args=[
+                "--disable-blink-features=AutomationControlled",
+                "--no-sandbox",
+                "--disable-infobars",
+            ],
         )
         self._context = self._browser.new_context(
             viewport={
@@ -63,12 +69,13 @@ class XHSBrowser:
                 "height": settings.viewport_height,
             },
             user_agent=(
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
                 "AppleWebKit/537.36 (KHTML, like Gecko) "
                 "Chrome/125.0.0.0 Safari/537.36"
             ),
             locale="zh-CN",
             timezone_id="Asia/Shanghai",
+            device_scale_factor=2,
         )
 
         # 恢复 Cookie
@@ -166,12 +173,23 @@ class XHSBrowser:
 
     # ── 安全导航 ──────────────────────────────────────────────
 
-    def safe_goto(self, url: str, *, wait_seconds: float = 3.0) -> None:
-        """带反爬检测的导航。"""
-        self.page.goto(url, wait_until="domcontentloaded", timeout=30000)
-        self.human_delay(wait_seconds, 2.0)
-        self.check_captcha()
-        self.cool_down()
+    def safe_goto(self, url: str, *, wait_seconds: float = 3.0, retries: int = 2) -> None:
+        """带反爬检测的导航，自动重试。"""
+        import time as _time
+
+        for attempt in range(retries):
+            try:
+                self.page.goto(url, wait_until="domcontentloaded", timeout=30000)
+                self.human_delay(wait_seconds, 2.0)
+                self.check_captcha()
+                self.cool_down()
+                return
+            except Exception as e:
+                if attempt < retries - 1:
+                    console.print(f"[yellow]⏳ 导航重试 ({attempt+1}/{retries}): {e}[/yellow]")
+                    _time.sleep(3)
+                    continue
+                raise
 
     def safe_click(self, selector: str, *, pre_delay: float = 1.0) -> None:
         """带延迟的点击。"""
