@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Literal
+from typing import Literal, Optional
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -30,7 +30,7 @@ class Settings(BaseSettings):
 
     # --- Paths ---
     data_dir: Path = Field(default_factory=lambda: Path.cwd() / "data")
-    cookie_file: Path | None = None  # computed below
+    cookie_file: Optional[Path] = None  # computed below
 
     def model_post_init(self, __context) -> None:
         if self.cookie_file is None:

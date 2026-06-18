@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Optional
 
 from rich.console import Console
 from rich.table import Table
@@ -12,7 +12,7 @@ from src.client import XHSBrowser
 console = Console()
 
 
-def get_user(browser: XHSBrowser, user_id: str | None = None) -> dict[str, Any]:
+def get_user(browser: XHSBrowser, user_id: Optional[str] = None) -> dict[str, Any]:
     """获取用户主页信息。
 
     Args:

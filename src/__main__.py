@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import sys
+from typing import Optional
 
 import click
 from rich.console import Console
@@ -90,7 +91,7 @@ def feed(feed_id: str, xsec_token: str, comments: bool):
 
 @cli.command()
 @click.argument("user_id", required=False)
-def profile(user_id: str | None):
+def profile(user_id: Optional[str] = None):
     """查看用户主页。"""
     browser = XHSBrowser()
     browser.start()
