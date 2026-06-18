@@ -7,7 +7,7 @@ name = "xiaohongshu-pro"
 version = "0.1.0"
 description = "小红书 Pro — AI-powered 小红书 browser automation tool"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.9"
 dependencies = [
     "playwright>=1.40.0",
     "click>=8.0.0",
